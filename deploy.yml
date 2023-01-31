@@ -18,6 +18,7 @@
       # - python-dev   # Optional
       - python3-pip
       - python3-dev
+      - python3-venv
       - nginx
 
 # Install the app, note: don't do these tasks with become sudo
@@ -28,15 +29,11 @@
       repo: 'https://github.com/{{ github_user }}/{{ app_name }}.git'
       dest: /home/{{ ansible_ssh_user }}/{{ app_name }}
       update: yes  # Does a git pull if the repo already exists
-  - name: Install virtualenv via pip
-    pip:
-      name: virtualenv
-      executable: pip3
-  - name: install modules in a virtualenv
+  - name: Setup Virtual Env
     pip:
       requirements: /home/{{ ansible_ssh_user }}/{{ app_name }}/requirements.txt
-      # virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
-      virtualenv_python: python3.5
+      virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
+      virtualenv_command: 'python3 -m venv'
 
 # Configure app systemd service and nginx
 - hosts: webservers
