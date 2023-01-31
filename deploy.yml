@@ -7,15 +7,13 @@
   become_method: sudo
   tasks:
   - name: update cache
-    apt: name=python-software-properties state=present update_cache=yes cache_valid_time=43200
-  - name: disable lighttpd
-    systemd: name=lighttpd state=stopped enabled=no  # To avoid conflicts with nginx
+    apt: name=python3-software-properties state=present update_cache=yes cache_valid_time=43200
   - name: install packages
-    apt: name={{item}} state=installed
+    apt: name={{item}}
     with_items:
       - tree         # Optional
       - python-pip   # Optional
-      - python-dev   # Optional
+      # - python-dev   # Optional
       - python3-pip
       - python3-dev
       - nginx
@@ -28,10 +26,14 @@
       repo: 'https://github.com/{{ github_user }}/{{ app_name }}.git'
       dest: /home/{{ ansible_ssh_user }}/{{ app_name }}
       update: yes  # Does a git pull if the repo already exists
+  - name: Install virtualenv via pip
+    pip:
+      name: virtualenv
+      executable: pip3
   - name: install modules in a virtualenv
     pip:
       requirements: /home/{{ ansible_ssh_user }}/{{ app_name }}/requirements.txt
-      virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
+      # virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
       virtualenv_python: python3.5
 
 # Configure app systemd service and nginx
@@ -71,6 +73,7 @@
   - name: get url
     get_url:
       url: http://{{inventory_hostname}}
+      client_key: /home/ubuntu/aws/pem/test.pem
       dest: /tmp/index.html
   - name: read html
     shell: cat /tmp/index.html
