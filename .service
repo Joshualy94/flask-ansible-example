@@ -1,13 +1,13 @@
 [Unit]
-Description=Gunicorn instance to serve flask-ansible-example
+Description=Gunicorn instance to serve {{ app_name }}
 After=network.target
 
 [Service]
-User=ubuntu
+User={{ ansible_ssh_user }}
 Group=www-data
-WorkingDirectory=/home/ubuntu/flask-ansible-example
-Environment="PATH=/home/ubuntu/flask-ansible-example/env/bin"
-ExecStart=/home/ubuntu/flask-ansible-example/env/bin/gunicorn --workers 3 --bind unix:flask-ansible-example.sock -m 777 wsgi:app
+WorkingDirectory=/home/{{ ansible_ssh_user }}/{{ app_name }}
+Environment="PATH=/home/{{ ansible_ssh_user }}/{{ app_name }}/env/bin"
+ExecStart=/home/{{ ansible_ssh_user }}/{{ app_name }}/env/bin/gunicorn --workers 3 --bind unix:{{ app_name }}.sock -m 777 wsgi:app
 
 [Install]
 WantedBy=multi-user.target
